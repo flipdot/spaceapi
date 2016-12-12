@@ -1,0 +1,63 @@
+{
+    "api": "0.13",
+    "space": "flipdot",
+    "logo": "https://flipdot.org/wiki/logo?action=AttachFile&do=get&target=flipdotlogo%20white%20a7.jpg",
+    "url": "https://flipdot.org",
+    "location": {
+        "address": "Franz-Ulrich-Stra\u00dfe 18, 34117 Kassel",
+        "lat": 51.3182536,
+        "lon": 9.4848149
+    },
+    "spacefed": {
+        "spacenet": false,
+        "spacesaml": false,
+        "spacephone": false
+    },
+    "contact": {
+        "twitter": "@flipdot_ks",
+        "email": "com@flipdot.org",
+        "irc": "irc://irc.freenode.net/#flipdot",
+        "ml": "discuss-flipdot@flipdot.org",
+        "issue_mail": "com@flipdot.org"
+    },
+    "issue_report_channels": [
+        "issue_mail"
+    ],
+    "open": null,
+    "icon": {
+        "open": "https://flipdot.org/wiki/door?action=AttachFile&do=get&target=fdopen.png",
+        "closed": "https://flipdot.org/wiki/door?action=AttachFile&do=get&target=fdclosed.png"
+    },
+    "state": {
+        "open": null,
+        "lastchange": 1465781037,
+        "icon": {
+            "open": "https://flipdot.org/wiki/door?action=AttachFile&do=get&target=fdopen.png",
+            "closed": "https://flipdot.org/wiki/door?action=AttachFile&do=get&target=fdclosed.png"
+        },
+        "projects": [
+            "https://github.com/flipdot"
+        ],
+        "cache": {
+            "schedule": "m.02"
+        },
+        "sensors": {
+            "temperature": [
+                {
+                    "value": "12",
+                    "unit": "\u00b0C",
+                    "location": "mainroom"
+                }
+            ],
+            "power_consumption": [
+                {
+                    "unit": "W",
+                    "name": "mainspower",
+                    "description": "overallpowerconsumptionfromourspace",
+                    "location": "firstfloor",
+                    "value": null
+                }
+            ]
+        }
+    }
+}
