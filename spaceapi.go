@@ -31,6 +31,11 @@ type Sensor struct{
     Unit sql.NullString
 }
 
+type Door struct{
+    gorm.Model
+    Open bool
+}
+
 var err error
 var db *gorm.DB
 var local = flag.String("local", "", "serve as webserver, example: 0.0.0.0:8000")
@@ -43,10 +48,12 @@ func main() {
     defer f.Close()
     log.SetOutput(f)
     log.SetFlags(log.LstdFlags | log.Lshortfile)
-    initDatabase()
+    InitDatabase()
     flag.Parse()
     h := http.NewServeMux()
-    h.HandleFunc("/", handler)
+    h.HandleFunc("/", SpaceapiHandler)
+    h.HandleFunc("/sensors/", SensorHandler)
+    h.HandleFunc("/door/", DoorHandler)
     if *local != "" {
         http.ListenAndServe(":8080", h)
     } else {
@@ -57,29 +64,54 @@ func main() {
     }
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func DoorHandler(w http.ResponseWriter, r *http.Request) {
+    arr := strings.Split(r.URL.Path[1:], "/")
+    if len(arr) > 1 {
+        state, err := strconv.ParseInt(arr[1], 10, 32)
+        if err == nil {
+            var d Door
+            db.FirstOrCreate(&d)
+            curState := state > 0
+            if d.Open != curState {
+                d.Open = curState
+                db.Save(&d)
+            }
+            if d.Open {
+                fmt.Fprintf(w, "now Open")
+            }else {
+                fmt.Fprintf(w, "now Closed")
+            }
+            return
+        }
+    }
+    fmt.Fprintf(w, "NOK")
+}
+
+func SensorHandler(w http.ResponseWriter, r *http.Request) {
     log.Printf(r.URL.Path)
-    arr := strings.Split(r.URL.Path[1:],"/")
+    arr := strings.Split(r.URL.Path[1:], "/")[1:]
     if len(arr) >= 3 {
         f, err := strconv.ParseFloat(arr[2], 32)
         if err == nil {
             switch len(arr) {
-                case 3:
-                    updateOrInsertValue(arr[0], arr[1], float32(f), "", "")
-                case 4:
-                    updateOrInsertValue(arr[0], arr[1], float32(f), arr[3], "")
-                case 5:
-                    updateOrInsertValue(arr[0], arr[1], float32(f), arr[3], arr[4])
-                default:
-                    fmt.Fprintf(w, "NOK")
-                    return
+            case 3:
+                UpdateOrInsertSensor(arr[0], arr[1], float32(f), "", "")
+            case 4:
+                UpdateOrInsertSensor(arr[0], arr[1], float32(f), arr[3], "")
+            case 5:
+                UpdateOrInsertSensor(arr[0], arr[1], float32(f), arr[3], arr[4])
+            default:
+                fmt.Fprintf(w, "NOK")
+                return
             }
             fmt.Fprintf(w, "Ok")
             return
         }
-        fmt.Fprintf(w, "NOK")
-        return
     }
+    fmt.Fprintf(w, "NOK")
+}
+
+func SpaceapiHandler(w http.ResponseWriter, r *http.Request) {
     headers := w.Header()
     headers.Add("Content-Type", "application/json; charset=utf-8")
     file, e := ioutil.ReadFile("./spaceapi.json")
@@ -95,13 +127,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
     m := f.(map[string]interface{})
     state := m["state"].(map[string]interface{})
 
-    state["lastchange"] = GetLastUpdate()
+    state["lastchange"] = GetLastDoorUpdate()
+    doorState := GetDoorState()
+    state["open"] = doorState
+    m["open"] = doorState
     sensor := make(map[string]interface{})
 
-    types := getSensorTypes()
-    fmt.Println(len(types))
+    types := GetSensorTypes()
     for i := range types{
-        s := getSensorsByType(types[i].Model.ID)
+        s := GetSensorsByType(types[i].Model.ID)
         sensorType := make([]map[string]interface{},len(s))
         //sensorType := make([]Sensor,len(s))
         for j := range s{
@@ -132,7 +166,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func getSensorTypes() []SensorTypes{
+func GetSensorTypes() []SensorTypes{
     var arr []SensorTypes
     db.Find(&arr)
     if db.Error != nil {
@@ -141,44 +175,49 @@ func getSensorTypes() []SensorTypes{
     return arr
 }
 
-func getSensorsByType(id uint) []Sensor{
+func GetSensorsByType(id uint) []Sensor{
     var arr []Sensor
     db.Find(&arr, Sensor{TypeRefer: int(id)})
     return arr
 }
 
 
-func initDatabase(){
-
+func InitDatabase(){
     db, err = gorm.Open("sqlite3", "./foo.db")
     if err != nil {
         log.Fatal(err)
     }
     db.AutoMigrate(&SensorTypes{})
     db.AutoMigrate(&Sensor{})
-
+    db.AutoMigrate(&Door{})
 }
 
-func GetLastUpdate() int64{
-    var s Sensor
-    db.Order("UpdatedAt").First(&s)
+func GetLastDoorUpdate() int64{
+    var d Door
+    db.Order("UpdatedAt").First(&d)
     if db.Error != nil {
         return 0
     }
-    return s.UpdatedAt.Unix()
+    return d.UpdatedAt.Unix()
+}
+
+func GetDoorState() bool  {
+    var d Door
+    db.First(&d)
+    if db.Error != nil {
+        log.Fatal(db.Error)
+        return false
+    }
+    return d.Open
+
 }
 
 
-func updateOrInsertValue(sensortype string, location string, value float32, unit string, desc string){
+func UpdateOrInsertSensor(sensortype string, location string, value float32, unit string, desc string){
     var sType SensorTypes
-
-    fmt.Println("update")
-    db.FirstOrCreate(&sType, SensorTypes{Name: sensortype})
-
-    fmt.Println("update %s", sType.Name)
-
     var sensor Sensor
 
+    db.FirstOrCreate(&sType, SensorTypes{Name: sensortype})
     db.FirstOrCreate(&sensor, Sensor{TypeRefer: int(sType.ID), Location: location})
 
     if len(unit) > 0 {
