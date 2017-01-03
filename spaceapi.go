@@ -14,6 +14,7 @@ import (
     "io/ioutil"
     "database/sql"
     "os"
+    "time"
 )
 
 type SensorTypes struct{
@@ -34,6 +35,9 @@ type Sensor struct{
 type Door struct{
     gorm.Model
     Open bool
+    UserNames sql.NullString  `gorm:"type:varchar(255)"`
+    UserCount int
+    LastDoorChange time.Time
 }
 
 var err error
@@ -66,16 +70,28 @@ func main() {
 
 func DoorHandler(w http.ResponseWriter, r *http.Request) {
     arr := strings.Split(r.URL.Path[1:], "/")
-    if len(arr) > 1 {
-        state, err := strconv.ParseInt(arr[1], 10, 32)
+    if len(arr) > 3 {
+        state, err := strconv.ParseInt(arr[1], 10, 16)
+        if err != nil {
+            http.Error(w, "invalid parameter", 400)
+            return
+        }
+        UserCnt, err := strconv.ParseInt(arr[2], 10, 16)
+        if err != nil {
+            http.Error(w, "invalid parameter", 400)
+            return
+        }
         if err == nil {
             var d Door
             db.FirstOrCreate(&d)
             curState := state > 0
             if d.Open != curState {
-                d.Open = curState
-                db.Save(&d)
+                d.LastDoorChange = time.Now()
             }
+            d.Open = curState
+            d.UserCount = int(UserCnt)
+            d.UserNames = sql.NullString{String:arr[3], Valid:true}
+            db.Save(&d)
             if d.Open {
                 fmt.Fprintf(w, "now Open")
             }else {
@@ -128,10 +144,10 @@ func SpaceapiHandler(w http.ResponseWriter, r *http.Request) {
     m := f.(map[string]interface{})
     state := m["state"].(map[string]interface{})
 
-    state["lastchange"] = GetLastDoorUpdate()
     doorState := GetDoorState()
-    state["open"] = doorState
-    m["open"] = doorState
+    state["lastchange"] = doorState.LastDoorChange.Unix()
+    state["open"] = doorState.Open
+    m["open"] = doorState.Open
     sensor := make(map[string]interface{})
 
     types := GetSensorTypes()
@@ -154,6 +170,18 @@ func SpaceapiHandler(w http.ResponseWriter, r *http.Request) {
         }
         sensor[types[i].Name] = sensorType
     }
+    sensorType := make([]map[string]interface{},1)
+    curSensor := make(map[string]interface{})
+    curSensor["value"] = doorState.UserCount
+    if doorState.UserNames.Valid {
+        curSensor["names"] = doorState.UserNames.String
+    } else {
+        curSensor["names"] = ""
+    }
+    sensorType[0] = curSensor
+    sensor["people_now_present"] = sensorType
+
+
 
     state["sensors"] = sensor
     bytes, err := json.MarshalIndent(f, "", "\t")
@@ -193,24 +221,14 @@ func InitDatabase(){
     db.AutoMigrate(&Door{})
 }
 
-func GetLastDoorUpdate() int64{
-    var d Door
-    db.Order("UpdatedAt").First(&d)
-    if db.Error != nil {
-        return 0
-    }
-    return d.UpdatedAt.Unix()
-}
-
-func GetDoorState() bool  {
+func GetDoorState() Door  {
     var d Door
     db.First(&d)
     if db.Error != nil {
         log.Fatal(db.Error)
-        return false
+        return Door{Open:false, UserCount:0, UserNames:sql.NullString{String:"", Valid:true}}
     }
-    return d.Open
-
+    return d
 }
 
 

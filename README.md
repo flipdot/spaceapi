@@ -6,4 +6,4 @@
     https://<server>/sensors/<sensortype>/<location>/<value>[/<unit>[/<description>]]
 
 ### Door
-    https://<server>/door/<state>
+    https://<server>/door/<state>/<users>/<usernames>/
