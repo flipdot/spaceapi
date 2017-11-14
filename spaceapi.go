@@ -127,13 +127,13 @@ func SensorHandler(w http.ResponseWriter, r *http.Request) {
 	if len(arr) >= 3 {
 		f, err := strconv.ParseFloat(arr[2], 32)
 		if err != nil {
-			fmt.Fprintf(w, "NOK")
+			fmt.Fprintf(w, "NOK\nparsefloat: %s", err.Error())
 			return
 		}
 		switch arr[0] {
 		case "beverage_supply":
 			if len(arr) != 5 {
-				fmt.Fprintf(w, "NOK")
+				fmt.Fprintf(w, "NOK\nlength wrong! want %d got %d", 5, len(arr))
 				return
 			}
 			UpdateOrInsertSensorByName(UpdateParam{SensorType: arr[0], Location: arr[1], Value: float32(f),
@@ -150,7 +150,7 @@ func SensorHandler(w http.ResponseWriter, r *http.Request) {
 				UpdateOrInsertSensor(UpdateParam{SensorType: arr[0], Location: arr[1], Value: float32(f),
 					Unit: arr[3], Description: arr[4]})
 			default:
-				fmt.Fprintf(w, "NOK")
+				fmt.Fprintf(w, "NOK\nlength wrong! want 3/4/5, got %s", len(arr))
 				return
 			}
 		}
@@ -158,19 +158,19 @@ func SensorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 
 	}
-	fmt.Fprintf(w, "NOK")
+	fmt.Fprintf(w, "NOK\nlength wrong! want >=3 got %d", len(arr))
 }
 
 func HandleSensorJSON(w http.ResponseWriter, r *http.Request) {
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "NOK\n"+err.Error(), 400)
+		http.Error(w, "NOK\nreading request body: "+err.Error(), 400)
 		return
 	}
 	var updates []UpdateParam
 	err = json.Unmarshal(b, &updates)
 	if err != nil {
-		http.Error(w, "NOK\n"+err.Error(), 400)
+		http.Error(w, "NOK\ndecoding JSON: "+err.Error(), 400)
 		return
 	}
 	for _, up := range updates {
