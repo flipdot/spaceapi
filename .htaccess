@@ -1,0 +1,14 @@
+AddDefaultCharset utf-8
+AddType 'application/json; charset=utf-8' .json
+
+Options +ExecCGI
+AddHandler fcgid-script .fcgi
+
+DirectoryIndex spaceapi.fcgi
+
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ /spaceapi.fcgi/$1 [L]
+
+Header set Access-Control-Allow-Origin "*"
+# Header set Content-Type application/json; charset=utf-8
