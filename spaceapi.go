@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,6 +13,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 type SensorTypes struct {
@@ -70,7 +71,8 @@ func main() {
 	h.HandleFunc("/sensors/", SensorHandler)
 	h.HandleFunc("/door/", DoorHandler)
 	if *local != "" {
-		http.ListenAndServe(":8080", h)
+		log.Println("Listening at", *local)
+		log.Fatalln(http.ListenAndServe(*local, h))
 	} else {
 		err = fcgi.Serve(nil, h)
 		if err != nil {
@@ -116,6 +118,11 @@ func DoorHandler(w http.ResponseWriter, r *http.Request) {
 
 func SensorHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf(r.URL.Path)
+	if r.Method == "PUT" {
+		HandleSensorJSON(w, r)
+		return
+	}
+
 	arr := strings.Split(r.URL.Path[1:], "/")[1:]
 	if len(arr) >= 3 {
 		f, err := strconv.ParseFloat(arr[2], 32)
@@ -152,6 +159,24 @@ func SensorHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 	fmt.Fprintf(w, "NOK")
+}
+
+func HandleSensorJSON(w http.ResponseWriter, r *http.Request) {
+	b, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "NOK\n"+err.Error(), 400)
+		return
+	}
+	var updates []UpdateParam
+	err = json.Unmarshal(b, &updates)
+	if err != nil {
+		http.Error(w, "NOK\n"+err.Error(), 400)
+		return
+	}
+	for _, up := range updates {
+		UpdateOrInsertSensor(up)
+	}
+	fmt.Fprintf(w, "Ok")
 }
 
 func SpaceapiHandler(w http.ResponseWriter, r *http.Request) {
