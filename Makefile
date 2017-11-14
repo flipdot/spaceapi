@@ -13,6 +13,7 @@ PACKAGE = github.com/flipdot/spaceapi
 ${BINARY}: ${FAKE_GOPATH}
 	go get -v ${PACKAGE}
 	go build -ldflags "-s -w" -o $@ ${PACKAGE}
+	chmod 0755 $@ # this is crucial for fcgi to work
 
 ${FAKE_GOPATH}:
 	mkdir -p $@
