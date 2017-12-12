@@ -211,6 +211,7 @@ func SpaceapiHandler(w http.ResponseWriter, r *http.Request) {
 			curSensor := make(map[string]interface{})
 			curSensor["location"] = s[j].Location
 			curSensor["value"] = s[j].Value
+			curSensor["ext_modified"] = s[j].UpdatedAt
 			if s[j].Description.Valid {
 				curSensor["description"] = s[j].Description.String
 			}
