@@ -18,8 +18,10 @@
         "email": "com@flipdot.org",
         "irc": "irc://irc.freenode.net/#flipdot",
         "ml": "discuss-flipdot@flipdot.org",
-        "issue_mail": "com@flipdot.org"
+        "issue_mail": "com@flipdot.org",
+        "phone": "+49 561 4739 5848"
     },
+    "ext_ccc": "erfa",
     "issue_report_channels": [
         "issue_mail"
     ],
