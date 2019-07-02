@@ -131,7 +131,7 @@ func SensorHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		switch arr[0] {
-		case "beverage_supply":
+		case "beverage_supply", "beverage_supply_raw":
 			if len(arr) != 5 {
 				fmt.Fprintf(w, "NOK\nlength wrong! want %d got %d", 5, len(arr))
 				return
