@@ -1,0 +1,33 @@
+---
+
+- name: Ensure spaceapi is deployed
+  hosts: label_swarm_manager:label_swarm_worker:&label_environment_{{ env }}
+  remote_user: root
+  tasks:
+    - name: Ensure system package deps are installed
+      package:
+        name: git
+
+    - name: Ensure docker_stack pip deps are installed
+      pip:
+        name: jsondiff
+      when: "'label_swarm_manager' in group_names"
+
+    - name: Ensure spaceapi repo is present
+      git:
+        repo: https://github.com/flipdot/spaceapi
+        dest: /root/spaceapi/
+        version: Add_dockerfile
+
+    - name: Ensure spaceapi image is build
+      command: docker build -t spaceapi .
+      args:
+        chdir: /root/spaceapi/
+
+    - name: Ensure spaceapi is deployed
+      docker_stack:
+        state: present
+        name: spaceapi
+        compose:
+          - /root/spaceapi/docker-compose.yml
+      when: "'label_swarm_manager' in group_names"
