@@ -2,8 +2,8 @@ version: '3.7'
 services:
   spaceapi:
     image: spaceapi
-  deploy:
-    restart_policy:
-      condition: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
     networks:
       - web
