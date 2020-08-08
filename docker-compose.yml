@@ -9,6 +9,7 @@ services:
         - "traefik.enable=true"
         - "traefik.http.services.spaceapi.loadbalancer.server.port=8000" 
         - "traefik.http.routers.spaceapi.rule=Host(`spaceapi.flipdot.dev`)"
+        - "traefik.http.routers.spaceapi.tls"
     networks:
       - web
 

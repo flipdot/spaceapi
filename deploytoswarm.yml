@@ -24,6 +24,19 @@
       args:
         chdir: /root/spaceapi/
 
+    - name: Ensure DNS is set up
+      inwx.collection.dns:
+        domain: "flipdot.dev"
+        type: "A"
+        record: "spaceapi"
+        value: "{{ hostvars[groups['label_swarm_manager'][0]]['ansible_default_ipv4']['address'] }}"
+        solo: true
+        ttl: "3600"
+        username: "test_flipdot_test"
+        password: "{{ lookup('env', 'INWX_PASSWORD') }}"
+      delegate_to: localhost
+      when: "'label_swarm_manager' in group_names"
+
     - name: Ensure spaceapi is deployed
       docker_stack:
         state: present
