@@ -25,6 +25,6 @@
       docker_compose:
         state: present
         build: true
-        project_src: /root/spaceapi
+        project_src: /root/spaceapi/deployment
       environment:
         - base_domain: "{{ lookup('env', 'base_domain') }}"
