@@ -1,0 +1,30 @@
+---
+
+- name: Ensure spaceapi is deployed
+  hosts: label_docker_:&label_environment_{{ env }}
+  remote_user: root
+  tasks:
+    - name: Ensure spaceapi deployment files are present
+      synchronize:
+        src: "{{ playbook_dir }}/.."
+        dest: /root/spaceapi/
+
+    - name: Ensure DNS is set up
+      inwx.collection.dns:
+        domain: "{{ lookup('env', 'base_domain') }}"
+        type: "A"
+        record: "api"
+        value: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+        solo: true
+        ttl: "3600"
+        username: "{{ lookup('env', 'INWX_USER') }}"
+        password: "{{ lookup('env', 'INWX_PASSWORD') }}"
+      delegate_to: localhost
+
+    - name: Ensure spaceapi is deployed
+      docker_compose:
+        state: present
+        build: true
+        project_src: /root/spaceapi
+      environment:
+        - base_domain: "{{ lookup('env', 'base_domain') }}"

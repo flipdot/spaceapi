@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  spaceapi:
+    build:
+      context: ..
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.spaceapi.loadbalancer.server.port=8000"
+      - "traefik.http.routers.spaceapi.rule=Host(`api.${base_domain}`)"
+      - "traefik.http.routers.spaceapi.tls=true"
+      - "traefik.http.routers.spaceapi.tls.certresolver=myresolver"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
