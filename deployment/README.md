@@ -8,7 +8,8 @@ Set INWX_USER
 Set INWX_PASSWORD
 
 Example run for the test environment
-HCLOUD_TOKEN=xxx ansible-playbook -i inventory/hcloud.yml -e env=test deploy.yml
+cd deployment
+source test.env; HCLOUD_TOKEN=xxx ansible-playbook -i inventory/hcloud.yml -e env=test deploy.yml
 
 
 # Docker
