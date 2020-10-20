@@ -11,14 +11,14 @@
 
     - name: Ensure DNS is set up
       inwx.collection.dns:
-        domain: "{{ lookup('env', 'base_domain') }}"
+        domain: "{{ lookup('env', 'BASE_DOMAIN') }}"
         type: "A"
-        record: "api"
-        value: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+        record: "{{ lookup('env', 'SPACEAPI_DOMAIN') }}"
+        value: "{{ ansible_default_ipv4.address }}"
         solo: true
         ttl: "3600"
-        username: "{{ lookup('env', 'INWX_USER') }}"
-        password: "{{ lookup('env', 'INWX_PASSWORD') }}"
+        username: "{{ lookup('passwordstore', env +'/DNS/INWX_USER')}}"
+        password: "{{ lookup('passwordstore', env +'/DNS/INWX_PASSWORD')}}"
       delegate_to: localhost
 
     - name: Ensure spaceapi is deployed
@@ -27,4 +27,4 @@
         build: true
         project_src: /root/spaceapi/deployment
       environment:
-        - base_domain: "{{ lookup('env', 'base_domain') }}"
+        - FULL_QUALIFIED_DOMAIN: "{{ lookup('env', 'FULL_QUALIFIED_DOMAIN') }}"

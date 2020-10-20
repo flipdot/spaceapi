@@ -1,31 +1,36 @@
 # Ansible
-Ansible does
-DNS, targeting, updating, deployment
+Ansible does DNS, targeting, updating, deployment
 
+## Requirements
 
-Needed for DNS entries
-Set INWX_USER
-Set INWX_PASSWORD
+Credentials needs to be setup from https://gitlab.com/flipdot/hosting/passwordstore
 
+## deployment
 Example run for the test environment
-cd deployment
-source test.env; HCLOUD_TOKEN=xxx ansible-playbook -i inventory/hcloud.yml -e env=test deploy.yml
+
+`cd deployment`
+
+`source test.env; PASSWORD_STORE_DIR="see requirements" HCLOUD_TOKEN=xxx ansible-playbook -i inventory/hcloud.yml -e env=test deploy.yml`
 
 
 # Docker
-## Setup
-Install hcloud to list servers in Hetzner cloud and connect to them
-pip install hcloud
+## Requirements
+
+`pip3 install hcloud`
 
 ## deployment
 list hetzner cloud server
-hcloud server list
+
+`hcloud server list`
 
 connect to docker host via ssh
-hcloud server ssh [name or id]
+
+`hcloud server ssh [name or id]`
 
 change dir to current spaceapi git folder
-cd spaceapi
+
+`cd spaceapi`
 
 Example run for the test environment
-source test.env;  docker-compose --build up
+
+`source test.env;  docker-compose --build up`
