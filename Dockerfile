@@ -1,4 +1,4 @@
-FROM golang AS builder
+FROM golang:1.16 AS builder
 
 COPY . /go/src/github.com/flipdot/spaceapi
 WORKDIR /go/src/github.com/flipdot/spaceapi
