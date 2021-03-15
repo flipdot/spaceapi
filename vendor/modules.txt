@@ -1,0 +1,23 @@
+# github.com/denisenkom/go-mssqldb v0.9.0
+## explicit
+# github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5
+## explicit
+# github.com/go-sql-driver/mysql v1.5.0
+## explicit
+# github.com/jinzhu/gorm v0.0.0-20160404144928-5174cc5c242a
+## explicit
+github.com/jinzhu/gorm
+github.com/jinzhu/gorm/dialects/sqlite
+# github.com/jinzhu/inflection v0.0.0-20170102125226-1c35d901db3d
+## explicit
+github.com/jinzhu/inflection
+# github.com/jinzhu/now v1.1.1
+## explicit
+# github.com/lib/pq v1.10.0
+## explicit
+# github.com/mattn/go-sqlite3 v1.4.0
+## explicit
+github.com/mattn/go-sqlite3
+# golang.org/x/net v0.0.0-20171107184841-a337091b0525
+## explicit
+golang.org/x/net/context
