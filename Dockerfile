@@ -1,7 +1,7 @@
-FROM golang AS builder
+FROM golang:1.16 AS builder
 
-COPY . /go/src/github.com/flipdot/spaceapi
-WORKDIR /go/src/github.com/flipdot/spaceapi
+COPY . /app
+WORKDIR /app
 RUN make
 RUN ln -s /dev/stdout spaceapi.log
-CMD ["/go/src/github.com/flipdot/spaceapi/spaceapi.fcgi","-local","0.0.0.0:8000"]
+CMD ["/app/spaceapi.fcgi","-local","0.0.0.0:8000"]
