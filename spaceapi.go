@@ -196,6 +196,7 @@ func SpaceapiHandler(w http.ResponseWriter, r *http.Request) {
 	headers := w.Header()
 	headers.Add("Content-Type", "application/json; charset=utf-8")
 	headers.Add("Cache-Control", "no-cache")
+	headers.Add("Access-Control-Allow-Origin", "*")
 	file, e := ioutil.ReadFile("./spaceapi.json")
 	if e != nil {
 		log.Fatal(e)
