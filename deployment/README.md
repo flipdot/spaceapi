@@ -1,36 +1,45 @@
-# Ansible
+
+# Deployment via Ansible
+
 Ansible does DNS, targeting, updating, deployment
 
 ## Requirements
 
 Credentials needs to be setup from https://gitlab.com/flipdot/hosting/passwordstore
 
-## deployment
-Example run for the test environment
-
-`cd deployment`
-
-`source test.env; PASSWORD_STORE_DIR="see requirements" HCLOUD_TOKEN=xxx ansible-playbook -i inventory/hcloud.yml -e env=test deploy.yml`
-
-
-# Docker
-## Requirements
-
 `pip3 install hcloud`
 
-## deployment
-list hetzner cloud server
+Access to an `HCLOUD_TOKEN` for the prod environment. When you need one, ask you admin
 
-`hcloud server list`
+Access to the prod-docker host https://gitlab.com/flipdot/hosting/docker/. When need you need one, ask your admin
+
+## Deployment
+
+Example run for the prod environment
+
+`source prod.env; PASSWORD_STORE_DIR="see requirements" HCLOUD_TOKEN=xxx ansible-playbook -i inventory/hcloud.yml -e env=prod deploy.yml`
+
+# Deployment via SSH
+
+This update the spaceapi app only
+
+## Requirements
+
+SSH access to api.flipdot.org. When you need one, ask your admin
+
+There should be an traefik (https://gitlab.com/flipdot/hosting/traefik) running on the target host
+
+## Deployment
 
 connect to docker host via ssh
 
-`hcloud server ssh [name or id]`
-
-change dir to current spaceapi git folder
+change dir to current spaceapi git folder and pull latest changes
 
 `cd spaceapi`
 
-Example run for the test environment
+`git pull`
 
-`source test.env;  docker-compose --build up`
+Example run for the prod environment
+
+`docker-compose build --pull`
+`source prod.env; docker-compose up --force-recreate -d`
