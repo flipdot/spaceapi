@@ -21,7 +21,7 @@ Example run for the prod environment
 
 # Deployment via SSH
 
-This update the spaceapi app only
+This updates the spaceapi app only
 
 ## Requirements
 
