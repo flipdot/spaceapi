@@ -1,7 +1,8 @@
 {
-    "api": "0.13",
+    "api": "0.14",
+    "api_compatibility": ["14"],
     "space": "flipdot",
-    "logo": "https://flipdot.org/wiki/logo?action=AttachFile&do=get&target=flipdotlogo%20white%20a7.jpg",
+    "logo": "https://raw.githubusercontent.com/flipdot/optik/master/logo/png/flipdot-logo-border-text.png",
     "url": "https://flipdot.org",
     "location": {
         "address": "Franz-Ulrich-Stra\u00dfe 18, 34117 Kassel",
@@ -14,31 +15,24 @@
         "spacephone": false
     },
     "contact": {
-        "twitter": "@flipdot_ks",
         "email": "com@flipdot.org",
-        "irc": "irc://irc.freenode.net/#flipdot",
-        "ml": "discuss-flipdot@flipdot.org",
-        "issue_mail": "com@flipdot.org",
-        "phone": "+49 561 4739 5848"
+        "issue_mail": "vorstand@flipdot.org",
+        "irc": "irc://irc.libera.chat/#flipdot",
+        "matrix": "#general:flipdot.org",
+        "mastodon": "@flipdot@social.flipdot.org"
     },
     "ext_ccc": "erfa",
     "issue_report_channels": [
         "issue_mail"
     ],
     "open": null,
-    "icon": {
-        "open": "https://flipdot.org/wiki/door?action=AttachFile&do=get&target=fdopen.png",
-        "closed": "https://flipdot.org/wiki/door?action=AttachFile&do=get&target=fdclosed.png"
-    },
     "state": {
         "open": null,
         "lastchange": 1465781037,
-        "icon": {
-            "open": "https://flipdot.org/wiki/door?action=AttachFile&do=get&target=fdopen.png",
-            "closed": "https://flipdot.org/wiki/door?action=AttachFile&do=get&target=fdclosed.png"
-        },
         "projects": [
-            "https://github.com/flipdot"
+            "https://code.flipdot.org",
+            "https://github.com/flipdot",
+            "https://gitlab.com/flipdot"
         ],
         "cache": {
             "schedule": "m.02"
