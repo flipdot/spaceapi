@@ -246,6 +246,7 @@ func SpaceapiHandler(w http.ResponseWriter, r *http.Request) {
 	outSensors["people_now_present"] = sensorType
 
 	m["sensors"] = outSensors
+	state["sensors"] = outSensors
 	bytes, err := json.MarshalIndent(f, "", "\t")
 	if err != nil {
 		log.Fatal(err)
