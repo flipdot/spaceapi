@@ -239,15 +239,13 @@ func SpaceapiHandler(w http.ResponseWriter, r *http.Request) {
 	sensorType := make([]map[string]interface{}, 1)
 	curSensor := make(map[string]interface{})
 	curSensor["value"] = doorState.UserCount
-	if doorState.UserNames.Valid {
-		curSensor["names"] = doorState.UserNames.String
-	} else {
-		curSensor["names"] = ""
+	if doorState.UserNames.Valid && doorState.UserNames.String != "" {
+		curSensor["names"] = strings.Split(doorState.UserNames.String, ",")
 	}
 	sensorType[0] = curSensor
 	outSensors["people_now_present"] = sensorType
 
-	state["sensors"] = outSensors
+	m["sensors"] = outSensors
 	bytes, err := json.MarshalIndent(f, "", "\t")
 	if err != nil {
 		log.Fatal(err)

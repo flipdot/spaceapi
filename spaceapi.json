@@ -36,24 +36,24 @@
         ],
         "cache": {
             "schedule": "m.02"
-        },
-        "sensors": {
-            "temperature": [
-                {
-                    "value": "12",
-                    "unit": "\u00b0C",
-                    "location": "mainroom"
-                }
-            ],
-            "power_consumption": [
-                {
-                    "unit": "W",
-                    "name": "mainspower",
-                    "description": "overallpowerconsumptionfromourspace",
-                    "location": "firstfloor",
-                    "value": null
-                }
-            ]
         }
+    },
+    "sensors": {
+        "temperature": [
+            {
+                "value": "12",
+                "unit": "\u00b0C",
+                "location": "mainroom"
+            }
+        ],
+        "power_consumption": [
+            {
+                "unit": "W",
+                "name": "mainspower",
+                "description": "overallpowerconsumptionfromourspace",
+                "location": "firstfloor",
+                "value": null
+            }
+        ]
     }
 }
