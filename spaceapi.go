@@ -14,8 +14,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type NoIdModel struct {
@@ -276,12 +277,23 @@ func GetSensorsByType(id string) (arr []Sensor) {
 }
 
 func InitDatabase(f *os.File) {
-	db, err = gorm.Open("sqlite3", "./foo.db")
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold:             time.Second,   // Slow SQL threshold
+			LogLevel:                  logger.Silent, // Log level
+			IgnoreRecordNotFoundError: true,          // Ignore ErrRecordNotFound error for logger
+			ParameterizedQueries:      true,          // Don't include params in the SQL log
+			Colorful:                  false,         // Disable color
+		},
+	)
+	db, err = gorm.Open(sqlite.Open("./foo.db"),
+		&gorm.Config{
+			Logger: newLogger,
+		})
 	if err != nil {
 		log.Fatal(err)
 	}
-	//db.LogMode(true)
-	db.SetLogger(gorm.Logger{log.New(f, "\r\n", 0)})
 	db.AutoMigrate(&Sensor{})
 	db.AutoMigrate(&Door{})
 }
